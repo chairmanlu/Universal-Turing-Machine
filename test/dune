@@ -1,0 +1,9 @@
+(test
+	(name utm_tests)
+	(modules utm_tests)
+	(libraries ounit2 utm))
+
+(test
+	(name parser_tests)
+	(modules parser_tests)
+	(libraries ounit2 parser))

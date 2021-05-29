@@ -1,0 +1,12 @@
+(executable
+	(modules driver)
+	(libraries utm parser)
+	(name driver))
+
+(library
+	(modules utm)
+	(name utm))
+
+(library
+	(modules parser)
+	(name parser))
