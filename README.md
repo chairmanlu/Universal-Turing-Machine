@@ -10,11 +10,11 @@ eval $(opam config env)
 
 To Build Main Project:
 ```shell
-dune build src/driver.ml
+dune build src/driver.exe
 ```
 To Run Main Project:
 ```shell
-dune run src/driver.exe
+dune exec src/driver.exe
 ```
 or
 ```shell
