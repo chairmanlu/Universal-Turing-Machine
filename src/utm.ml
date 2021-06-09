@@ -4,6 +4,7 @@ type state = int
 type direction = L | R
 type echar = Blank | Char of char
 type tape = echar list * echar * echar list
+type status = Running | Accepted | Rejected
 
 type t = CharSet.t                                     (* Alphabet *)
        * string array                                  (* State Mapping *)
@@ -13,16 +14,25 @@ type t = CharSet.t                                     (* Alphabet *)
        * state                                         (* Reject State *)
        * tape                                          (* Infinite Tape *)
 
-let move_head = function
+
+(* Possible optimization - Prune Blanks from ends of list *)
+let moveHead = function
 	| (([],c,r), L) -> ([],Blank,c::r)
 	| ((c'::l,c,r), L) -> (l,c',c::r)
 	| ((l,c,[]), R) -> (c::l,Blank,[])
 	| ((l,c,c'::r), R) -> (c::l,c',r)
 
-let write_char (l,_,r) c' = (l,c',r)
+let writeChar (l,_,r) c' = (l,c',r)
 
+(* step: t -> t * status
+ * step t evaluates one step of the turing machine specified by t. It outputs 
+ * the resulting turing machine and status of the machine after the step.
+ *
+ * NOTE: Currently doesn't handle case where initial state is accept/reject
+ *)
 let step = function
-(*	| (alpha,labels,s,d,a,r,t) -> raise (Failure "Not Yet Implemented")*)
-	| _ -> raise (Failure "Not Yet Implemented")
-
-let name () = Printf.printf "UTM\n"
+	| (alpha,labels,s,delta,a,r,((_,c,_) as t)) ->
+		let (dir,c',s'):(direction * echar * state) = delta (s,c) in
+		let t' = moveHead ((writeChar t c'),dir) in
+		let res = if s'= a then Accepted else if s'=r then Rejected else Running in
+		((alpha,labels,s',delta,a,r,t'),res)
