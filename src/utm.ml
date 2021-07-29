@@ -27,12 +27,13 @@ let writeChar (l,_,r) c' = (l,c',r)
 (* step: t -> t * status
  * step t evaluates one step of the turing machine specified by t. It outputs 
  * the resulting turing machine and status of the machine after the step.
- *
- * NOTE: Currently doesn't handle case where initial state is accept/reject
+ * If the initial state is an accepting or rejecting state nothing is evaluated
+ * and the status is immediately returned.
  *)
 let step = function
-	| (alpha,labels,s,delta,a,r,((_,c,_) as t)) ->
-		let (dir,c',s'):(direction * echar * state) = delta (s,c) in
+	| ((alpha,labels,s,delta,a,r,((_,c,_) as t)) as tm) ->
+		if s=a then (tm,Accepted) else if s=r then (tm,Rejected) else
+		let (dir,c',s') = delta (s,c) in
 		let t' = moveHead ((writeChar t c'),dir) in
 		let res = if s'= a then Accepted else if s'=r then Rejected else Running in
 		((alpha,labels,s',delta,a,r,t'),res)
